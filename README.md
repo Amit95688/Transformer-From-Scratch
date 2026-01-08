@@ -52,7 +52,7 @@ cd Transformer-From-Scratch
 
 
 ---
-
+```
 🚀 Quick Start
 
 import torch
