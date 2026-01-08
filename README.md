@@ -1,72 +1,68 @@
-````markdown
-# Transformer-From-Scratch
 
-A clean, well-documented **PyTorch implementation of the Transformer architecture**
-from the paper **“Attention Is All You Need” (Vaswani et al., 2017)**.
+---
+# Transformer From Scratch 🧠⚡
 
-This project is designed for **learning, clarity, and extensibility**, implementing
-the Transformer completely from scratch without relying on high-level abstractions.
+![Python](https://img.shields.io/badge/Python-3.7%2B-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-1.9%2B-red)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Project-Educational-success)
+
+A **from-scratch PyTorch implementation of the Transformer architecture**, based on the paper  
+📄 **“Attention Is All You Need” – Vaswani et al. (2017)**.
+
+This repository focuses on **clarity, modularity, and learning**, avoiding high-level abstractions so you can understand *how Transformers actually work under the hood*.
 
 ---
 
-## ✨ Features
+## 🔍 What’s Inside?
 
-- Complete Transformer Architecture (Encoder + Decoder)
-- Multi-Head Attention with configurable heads
-- Sinusoidal Positional Encoding
-- Pre-Layer Normalization for training stability
-- Modular and extensible design
-- Full type hints for readability
-
----
-
-## 🧠 Architecture Components
-
-- `InputEmbedding` – Token embeddings with scaling
-- `PositionalEncoding` – Sinusoidal positional encodings
-- `MultiHeadAttention` – Scaled dot-product attention
-- `FeedForward` – Position-wise feed-forward network
-- `LayerNormalization` – Custom LayerNorm
-- `ResidualConnection` – Residual connections with dropout
-- `EncoderBlock` & `DecoderBlock`
-- `Encoder` & `Decoder`
-- `Transformer` – Complete model
+✔ Complete **Encoder–Decoder Transformer**  
+✔ **Multi-Head Self Attention** implemented manually  
+✔ **Scaled Dot-Product Attention**  
+✔ **Sinusoidal Positional Encoding**  
+✔ Residual Connections + Layer Normalization  
+✔ Clean, modular PyTorch code  
+✔ Easy to extend for experiments
 
 ---
 
-## 📦 Installation
+## 🏗️ Transformer Architecture
+
+Input Embeddings ↓ Positional Encoding ↓ ┌──────────────────────────┐ │      Encoder Stack       │ │ ┌────────────────────┐  │ │ │ Multi-Head Attention│ │ │ │ Feed Forward        │ │ │ └────────────────────┘  │ └──────────────────────────┘ ↓ ┌──────────────────────────┐ │      Decoder Stack       │ │ ┌────────────────────┐  │ │ │ Masked Attention    │ │ │ │ Cross Attention     │ │ │ │ Feed Forward        │ │ │ └────────────────────┘  │ └──────────────────────────┘ ↓ Linear + Softmax
+
+---
+
+## 📦 Requirements
+
+- Python **3.7+**
+- PyTorch **1.9+**
+
+Install PyTorch (example):
 
 ```bash
+pip install torch
+
+
+---
+
+⚙️ Installation
+
 git clone https://github.com/Amit95688/Transformer-From-Scratch.git
 cd Transformer-From-Scratch
-pip install torch
-````
+
 
 ---
 
-## ⚙️ Requirements
+🚀 Quick Start
 
-* Python 3.7+
-* PyTorch 1.9+
-
----
-
-## 🚀 Usage
-
-```python
 import torch
 from model import build_transformer
 
-src_vocab_size = 10000
-tgt_vocab_size = 10000
-src_seq_len = 100
-tgt_seq_len = 100
-
 model = build_transformer(
-    src_vocab_size=src_vocab_size,
-    tgt_vocab_size=tgt_vocab_size,
-    src_seq_len=src_seq_len,
-    tgt_seq_len=tgt_seq_len,
+    src_vocab_size=10000,
+    tgt_vocab_size=10000,
+    src_seq_len=100,
+    tgt_seq_len=100,
     d_model=512,
     d_ff=2048,
     num_heads=8,
@@ -74,106 +70,100 @@ model = build_transformer(
     dropout=0.1
 )
 
-src = torch.randint(0, src_vocab_size, (32, 20))
-tgt = torch.randint(0, tgt_vocab_size, (32, 20))
+src = torch.randint(0, 10000, (32, 20))
+tgt = torch.randint(0, 10000, (32, 20))
 
-encoder_output = model.encode(src)
-decoder_output = model.decode(tgt, encoder_output)
-output = model.project(decoder_output)
+enc_out = model.encode(src)
+dec_out = model.decode(tgt, enc_out)
+output = model.project(dec_out)
 
-print(output.shape)  # [32, 20, tgt_vocab_size]
-```
+print(output.shape)  # (32, 20, 10000)
 
----
-
-## 🧩 Individual Components
-
-```python
-import torch
-from model import MultiHeadAttention, FeedForward, EncoderBlock
-
-d_model = 512
-
-self_attn = MultiHeadAttention(d_model, num_heads=8, dropout=0.1)
-ff = FeedForward(d_model, d_ff=2048, dropout=0.1)
-
-encoder_block = EncoderBlock(d_model, self_attn, ff, dropout=0.1)
-
-x = torch.randn(32, 20, d_model)
-output = encoder_block(x)
-```
 
 ---
 
-## 🎭 Masks
+🧩 Core Components
 
-```python
+🔹 Multi-Head Attention
+
+from model import MultiHeadAttention
+
+mha = MultiHeadAttention(d_model=512, num_heads=8, dropout=0.1)
+
+🔹 Feed Forward Network
+
+from model import FeedForward
+
+ff = FeedForward(d_model=512, d_ff=2048, dropout=0.1)
+
+🔹 Encoder Block
+
+from model import EncoderBlock
+
+encoder_block = EncoderBlock(d_model=512, self_attn=mha, feed_forward=ff, dropout=0.1)
+
+
+---
+
+🎭 Masking Utilities
+
+Padding Mask → ignore padding tokens
+
+Look-Ahead Mask → prevent future token leakage
+
+
 def create_padding_mask(seq, pad_idx=0):
     return (seq != pad_idx).unsqueeze(1).unsqueeze(2)
 
 def create_look_ahead_mask(size):
-    mask = torch.triu(torch.ones(size, size), diagonal=1)
-    return mask == 0
-```
+    return torch.triu(torch.ones(size, size), diagonal=1) == 0
+
 
 ---
 
-## 🔧 Model Parameters
+🧪 Why This Repo?
 
-| Parameter      | Type  | Default | Description                |
-| -------------- | ----- | ------- | -------------------------- |
-| src_vocab_size | int   | —       | Source vocabulary size     |
-| tgt_vocab_size | int   | —       | Target vocabulary size     |
-| src_seq_len    | int   | —       | Max source sequence length |
-| tgt_seq_len    | int   | —       | Max target sequence length |
-| d_model        | int   | 512     | Model dimension            |
-| d_ff           | int   | 2048    | Feed-forward dimension     |
-| num_heads      | int   | 8       | Attention heads            |
-| num_layers     | int   | 6       | Encoder/Decoder layers     |
-| dropout        | float | 0.1     | Dropout probability        |
+This project is ideal if you want to:
 
----
+Understand Transformers line-by-line
 
-## 📐 Architecture Math
+Prepare for research or interviews
 
-Attention(Q, K, V) = softmax(QKᵀ / √dₖ) V
+Modify attention mechanisms
 
-PE(pos, 2i)   = sin(pos / 10000^(2i / d_model))
-PE(pos, 2i+1) = cos(pos / 10000^(2i / d_model))
+Build intuition before using nn.Transformer or HuggingFace
+
+
+> This is not optimized for production — it’s optimized for learning.
+
+
+
 
 ---
 
-## 📁 Project Structure
+📚 Reference
 
-.
-├── model.py
-└── README.md
+Vaswani et al., Attention Is All You Need, 2017
 
----
+https://arxiv.org/abs/1706.03762
 
-## 📜 License
 
-MIT License
 
 ---
 
-## 📚 Citation
+📜 License
 
-```bibtex
-@article{vaswani2017attention,
-  title={Attention is all you need},
-  author={Vaswani, Ashish et al.},
-  journal={Advances in Neural Information Processing Systems},
-  volume={30},
-  year={2017}
-}
-```
+MIT License — free to use, modify, and share.
+
 
 ---
 
-## 📬 Contact
+👤 Author
 
-[https://github.com/Amit95688/Transformer-From-Scratch](https://github.com/Amit95688/Transformer-From-Scratch)
+Amit
+🔗 https://github.com/Amit95688
 
-```
-```
+If you found this helpful, consider ⭐ starring the repo!
+
+---
+
