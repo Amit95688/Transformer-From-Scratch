@@ -264,7 +264,9 @@ class Transformer(nn.Module):
 def build_transformer(src_vocab_size: int, tgt_vocab_size: int, 
                       src_seq_len: int, tgt_seq_len: int,
                       d_model: int = 512, d_ff: int = 2048, 
-                      num_heads: int = 8, num_layers: int = 6, 
+                      num_heads: int = 8, 
+                      num_encoder_layers: int = 6,
+                      num_decoder_layers: int = 6,
                       dropout: float = 0.1) -> Transformer:
     """
     Build a complete Transformer model with specified parameters.
@@ -279,14 +281,14 @@ def build_transformer(src_vocab_size: int, tgt_vocab_size: int,
     
     # Create encoder blocks
     encoder_blocks = []
-    for _ in range(num_layers):
+    for _ in range(num_encoder_layers):
         self_attn = MultiHeadAttention(d_model, num_heads, dropout)
         ff = FeedForward(d_model, d_ff, dropout)
         encoder_blocks.append(EncoderBlock(d_model, self_attn, ff, dropout))
     
     # Create decoder blocks
     decoder_blocks = []
-    for _ in range(num_layers):
+    for _ in range(num_decoder_layers):
         self_attn = MultiHeadAttention(d_model, num_heads, dropout)
         cross_attn = MultiHeadAttention(d_model, num_heads, dropout)
         ff = FeedForward(d_model, d_ff, dropout)
