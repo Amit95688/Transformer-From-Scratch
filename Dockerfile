@@ -38,7 +38,10 @@ COPY tokenizer_en.json .
 COPY tokenizer_hi.json .
 
 # Create directories for outputs
-RUN mkdir -p models runs
+RUN mkdir -p models runs mlruns
+
+# Expose MLflow UI port (optional, for remote access)
+EXPOSE 5000
 
 # Default command: training
 CMD ["python", "train.py"]

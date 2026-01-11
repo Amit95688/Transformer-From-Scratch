@@ -3,6 +3,8 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader, random_split
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
+import mlflow
+import mlflow.pytorch
 
 from dataset import BilingualDataset, casual_mask
 from model import build_transformer
@@ -208,6 +210,10 @@ def train_model(config):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
+    # Set MLflow tracking URI and experiment
+    mlflow.set_tracking_uri(f"file:{Path.cwd()}/mlruns")
+    mlflow.set_experiment(config['experiment_name'])
+    
     Path(config['model_folder'] + '/' + config['experiment_name']).mkdir(parents=True, exist_ok=True)
 
     train_dataloader, val_dataloader, tokenizer_src, tokenizer_tgt = get_ds(config)
@@ -231,9 +237,13 @@ def train_model(config):
         initial_epoch = state['epoch']
         global_step = state['global_step']
     
-    for epoch in range(initial_epoch, config['num_epochs']):
-        model.train()
-        batch_iterator = tqdm(train_dataloader, desc=f"Epoch {epoch+1}/{config['num_epochs']}")
+    with mlflow.start_run():
+        # Log all configuration parameters
+        mlflow.log_params(config)
+        
+        for epoch in range(initial_epoch, config['num_epochs']):
+            model.train()
+            batch_iterator = tqdm(train_dataloader, desc=f"Epoch {epoch+1}/{config['num_epochs']}")
         
         for batch in batch_iterator:
             encoder_input = batch['encoder_input'].to(device)
@@ -255,6 +265,7 @@ def train_model(config):
 
             batch_iterator.set_postfix({"loss": f"{loss.item():.4f}"})
             writer.add_scalar('Train/Loss', loss.item(), global_step)
+            mlflow.log_metric('train_loss', loss.item(), step=global_step)
             writer.flush()
 
             loss.backward()
@@ -290,6 +301,13 @@ def train_model(config):
             'optimizer_state_dict': optimizer.state_dict(),
             'global_step': global_step,
         }, model_filename)
+        
+        # Log model checkpoint and metrics at end of epoch
+        mlflow.log_artifact(model_filename, artifact_path="model_checkpoints")
+        mlflow.log_metric('epoch', epoch + 1)
+        
+        # Log model itself to MLflow
+        mlflow.pytorch.log_model(model, "model_latest")
 
 if __name__ == "__main__":
     import warnings

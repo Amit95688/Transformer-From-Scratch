@@ -1,6 +1,9 @@
 # Development dependencies (includes production dependencies)
 -r requirements.txt
 
+# Experiment tracking
+mlflow>=2.10.0
+
 # Testing and code quality
 pytest>=7.4.0
 pytest-cov>=4.1.0
