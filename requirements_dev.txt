@@ -1,0 +1,17 @@
+# Development dependencies (includes production dependencies)
+-r requirements.txt
+
+# Testing and code quality
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.9.0
+flake8>=6.1.0
+isort>=5.12.0
+mypy>=1.5.0
+
+# Jupyter and notebooks
+jupyter>=1.0.0
+ipython>=8.15.0
+
+# Debugging and profiling
+ipdb>=0.13.13
