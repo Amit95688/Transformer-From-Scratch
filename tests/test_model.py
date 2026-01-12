@@ -3,7 +3,7 @@ import pytest
 import torch
 from pathlib import Path
 
-from model import build_transformer
+from src.core.model import build_transformer
 
 
 class TestModelBuilding:

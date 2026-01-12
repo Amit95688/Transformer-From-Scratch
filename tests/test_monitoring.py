@@ -1,6 +1,6 @@
 """Unit tests for monitoring modules"""
 import pytest
-from monitoring.metrics import MetricsCollector
+from src.monitoring.metrics import MetricsCollector
 
 
 class TestMetricsCollector:
