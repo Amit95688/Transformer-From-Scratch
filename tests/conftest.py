@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 @pytest.fixture
 def config():
     """Load config for testing"""
-    from config import get_config
+    from config.config import get_config
     return get_config()
 
 

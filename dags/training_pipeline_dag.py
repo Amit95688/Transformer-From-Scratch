@@ -31,7 +31,7 @@ dag = DAG(
 def check_data_availability():
     """Check if training data is available"""
     from datasets import load_dataset
-    from config import get_config
+    from config.config import get_config
     
     config = get_config()
     try:
@@ -48,7 +48,7 @@ def check_data_availability():
 
 def validate_config():
     """Validate configuration parameters"""
-    from config import get_config
+    from config.config import get_config
     
     config = get_config()
     required_keys = ['lang_src', 'lang_tgt', 'model_folder', 'num_epochs']
@@ -127,7 +127,7 @@ test_inference_task = BashOperator(
     python -c "
 import torch
 from pathlib import Path
-from config import get_config
+from config.config import get_config
 
 config = get_config()
 model_folder = Path(config['model_folder'])

@@ -34,7 +34,7 @@ class TestModelPerformance:
     def test_model_can_be_loaded(self, config, device):
         """Test loading trained model"""
         import torch
-        from model import build_transformer
+        from src.core.model import build_transformer
         
         model_path = Path(config["model_folder"]) / config["experiment_name"]
         

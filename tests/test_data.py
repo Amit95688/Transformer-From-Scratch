@@ -38,7 +38,7 @@ class TestDataValidation:
     
     def test_tokenizer_files_exist(self):
         """Test tokenizer files are present"""
-        from config import get_config
+        from config.config import get_config
         config = get_config()
         
         src_tokenizer = Path(config["tokenizer_file"].format(lang=config["lang_src"]))
