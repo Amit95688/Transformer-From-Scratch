@@ -30,18 +30,18 @@ ENV PATH=/root/.local/bin:$PATH \
     PYTHONDONTWRITEBYTECODE=1
 
 # Copy project files
-COPY config.py .
-COPY dataset.py .
-COPY model.py .
-COPY train.py .
-COPY tokenizer_en.json .
-COPY tokenizer_hi.json .
+COPY src/ ./src/
+COPY config/ ./config/
+COPY data/ ./data/
+COPY scripts/ ./scripts/
+COPY templates/ ./templates/
+COPY main.py .
 
 # Create directories for outputs
 RUN mkdir -p models runs mlruns
 
-# Expose MLflow UI port (optional, for remote access)
+# Expose Flask web app port
 EXPOSE 5000
 
-# Default command: training
-CMD ["python", "train.py"]
+# Default command: run web app
+CMD ["python", "main.py"]
