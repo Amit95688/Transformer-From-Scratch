@@ -1,10 +1,9 @@
-# 🤖 Transformer Model - English to Hindi Translation
+# 🤖 Transformer Model - Neural Machine Translation
 
-> Production-ready transformer model for bilingual machine translation with complete MLOps infrastructure
+> Production-ready transformer model for bilingual machine translation (English ↔ Spanish) with modular architecture and comprehensive training pipeline
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
-[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-brightgreen.svg)](#cicd)
+[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch 2.9+](https://img.shields.io/badge/PyTorch-2.9+-red.svg)](https://pytorch.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ## 📋 Table of Contents
@@ -15,49 +14,47 @@
 - [Project Structure](#project-structure)
 - [Installation](#installation)
 - [Usage](#usage)
-- [MLOps Infrastructure](#mlops-infrastructure)
-- [Model Architecture](#model-architecture)
-- [Testing](#testing)
-- [Docker](#docker)
+- [Training](#training)
+- [API Documentation](#api-documentation)
 - [Contributing](#contributing)
-- [Resources](#resources)
 
 ---
 
 ## 🎯 Overview
 
-This project implements a **transformer-based machine translation model** (English ↔ Hindi) with a complete production-ready MLOps infrastructure. It demonstrates modern machine learning best practices including:
+This project implements a **production-ready Transformer-based machine translation model** with:
 
-- ✅ Modular code architecture
-- ✅ Comprehensive testing framework
-- ✅ Automated CI/CD pipelines
-- ✅ Experiment tracking & monitoring
-- ✅ Professional documentation
-- ✅ Docker containerization
-- ✅ Data versioning with DVC
-- ✅ Workflow orchestration with Airflow
+- ✅ **Modular Architecture** - Clean separation of components, pipelines, and utilities
+- ✅ **Complete Training Pipeline** - End-to-end data loading, tokenization, training
+- ✅ **Prediction Pipeline** - Inference API for translations
+- ✅ **Web Interface** - Flask-based UI for interactive translations
+- ✅ **Comprehensive Logging** - Built-in logging and error handling
+- ✅ **Docker Support** - Containerized deployment ready
+- ✅ **Professional Structure** - Following industry best practices
 
 ---
 
 ## ✨ Features
 
-### 🧠 Model Components
-- **Transformer Architecture** - Multi-head attention, positional encoding
-- **Bilingual Dataset** - English-Hindi parallel corpus
-- **Tokenization** - SentencePiece tokenizers for both languages
-- **Training Pipeline** - Distributed training with PyTorch
-- **Evaluation Metrics** - BLEU score, perplexity tracking
+### 🧠 Model & Architecture
+- **Transformer Architecture** - Multi-head attention, positional encoding, feed-forward networks
+- **Bilingual Dataset** - Opus Books English-Spanish parallel corpus (93K+ examples)
+- **Fast Tokenization** - SentencePiece tokenizers for both languages
+- **Efficient Training** - Gradient clipping, NaN detection, mixed precision ready
+- **Validation During Training** - Real-time translation quality monitoring
 
-### 🔄 MLOps Features
-| Feature | Tool | Status |
-|---------|------|--------|
-| **Experiment Tracking** | MLflow | ✅ Implemented |
-| **Data Versioning** | DVC | ✅ Configured |
-| **Workflow Orchestration** | Airflow | ✅ DAGs Ready |
-| **CI/CD Pipeline** | GitHub Actions | ✅ Active |
-| **Monitoring & Logging** | Custom | ✅ Built-in |
-| **Testing** | Pytest | ✅ Comprehensive |
-| **Containerization** | Docker | ✅ Ready |
+### 🔄 Software Engineering
+- **Modular Components** - Data ingestion, transformation, model training, evaluation
+- **Pipeline Architecture** - Separate training and prediction pipelines
+- **Custom Exception Handling** - Detailed error messages with stack traces
+- **Centralized Logging** - Console and file logging with structured format
+- **Unit Tests Ready** - Test framework for all components
+
+### 📊 Configuration
+- **Centralized Config** - Single point for all hyperparameters
+- **Flexible Dataset Support** - Works with multiple dataset formats
+- **Checkpoint Management** - Save and load model states
+- **Experiment Tracking** - TensorBoard integration
 
 ---
 
@@ -70,35 +67,388 @@ This project implements a **transformer-based machine translation model** (Engli
 git clone https://github.com/Amit95688/Transformer-From-Scratch.git
 cd Transformer-From-Scratch
 
-# Create virtual environment
-python -m venv .venv
+# Create virtual environment (Python 3.14+)
+python3 -m venv .venv
+
+# Activate environment
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+.venv/bin/pip install --upgrade pip
+.venv/bin/pip install torch datasets tokenizers tqdm tensorboard Flask
 ```
 
 ### 2️⃣ Train the Model
 
 ```bash
-python scripts/train.py
+# Using the new modular training pipeline
+.venv/bin/python src/TransformerModel/pipelines/training_pipeline.py
+
+# Or use the original training script
+.venv/bin/python scripts/train.py
 ```
 
-### 3️⃣ Start Web Application
+### 3️⃣ Run Web Application
 
 ```bash
-python main.py
+.venv/bin/python app.py
 # Visit http://localhost:5000
 ```
 
-### 4️⃣ Run Tests
+### 4️⃣ Test Components
 
 ```bash
-pip install -r requirements_dev.txt
+.venv/bin/python test.py
+```
+
+---
+
+## 📁 Project Structure
+
+```
+transformer/
+├── src/
+│   └── TransformerModel/              # Main package
+│       ├── components/                # Core components
+│       │   ├── data_ingestion.py      # Dataset loading
+│       │   ├── data_transformation.py # Tokenization & preprocessing
+│       │   ├── model_trainer.py       # Transformer architecture
+│       │   └── model_evaluation.py    # Evaluation metrics
+│       │
+│       ├── pipelines/                 # End-to-end workflows
+│       │   ├── training_pipeline.py   # Training workflow
+│       │   └── prediction_pipeline.py # Inference workflow
+│       │
+│       ├── utils/                     # Utilities
+│       │   ├── utils.py               # Helper functions
+│       │   ├── logger.py              # Logging utilities
+│       │   └── metrics.py             # Metrics collection
+│       │
+│       ├── logger.py                  # Logging configuration
+│       └── exception.py               # Custom exceptions
+│
+├── config/
+│   └── config.py                      # Hyperparameters & settings
+│
+├── data/
+│   └── tokenizers/                    # Trained tokenizers
+│
+├── notebooks/
+│   └── research.ipynb                 # Experiments & research
+│
+├── templates/                         # HTML templates
+│   ├── index.html                     # Home page
+│   └── translate.html                 # Translation UI
+│
+├── tests/                             # Unit tests
+├── scripts/                           # Training scripts
+├── models/                            # Saved models & checkpoints
+│
+├── app.py                             # Flask web application
+├── test.py                            # Component testing
+├── setup.py                           # Package installation
+├── requirements.txt                   # Dependencies
+└── README.md                          # This file
+```
+
+---
+
+## ⚙️ Installation
+
+### Prerequisites
+- Python 3.10+
+- 4GB+ RAM (8GB+ recommended for training)
+- GPU support (CUDA 12.1+) optional but recommended
+
+### Setup Steps
+
+```bash
+# 1. Clone repository
+git clone <repo-url>
+cd transformer
+
+# 2. Create virtual environment
+python3 -m venv .venv
+
+# 3. Activate (Linux/Mac)
+source .venv/bin/activate
+# Or on Windows:
+# .venv\Scripts\activate
+
+# 4. Install minimal dependencies
+pip install --upgrade pip
+pip install -r requirements_minimal.txt
+
+# 5. Install as editable package (optional)
+pip install -e .
+```
+
+---
+
+## 🎯 Usage
+
+### Training the Model
+
+```bash
+# Run training pipeline
+python src/TransformerModel/pipelines/training_pipeline.py
+```
+
+**Configuration** (edit `config/config.py`):
+- `batch_size`: Batch size for training (default: 2)
+- `num_epochs`: Number of training epochs (default: 3)
+- `lr`: Learning rate (default: 0.0001)
+- `seq_length`: Maximum sequence length (default: 128)
+- `d_model`: Model dimension (default: 128)
+- `nhead`: Number of attention heads (default: 8)
+
+### Prediction
+
+```python
+from TransformerModel.pipelines.prediction_pipeline import PredictPipeline, CustomData
+
+# Initialize pipeline
+predictor = PredictPipeline(
+    model_path='models/model.pth',
+    tokenizer_src_path='data/tokenizers/tokenizer_en.json',
+    tokenizer_tgt_path='data/tokenizers/tokenizer_es.json'
+)
+
+# Translate text
+result = predictor.predict("Hello, how are you?")
+print(result)
+```
+
+### Web Interface
+
+```bash
+python app.py
+# Open browser to http://localhost:5000
+```
+
+---
+
+## 🏋️ Training
+
+### Quick Training Run
+
+```bash
+# Minimal setup for testing (small dataset, 1 epoch)
+python src/TransformerModel/pipelines/training_pipeline.py
+```
+
+### Monitor Training
+
+```bash
+# In another terminal, start TensorBoard
+tensorboard --logdir=runs/
+# Open http://localhost:6006
+```
+
+### Training Outputs
+- Model checkpoints: `models/runs/`
+- Logs: `logs/`
+- Tensorboard events: `runs/`
+
+### Expected Training Time
+- 1 epoch on CPU: ~2-3 hours
+- 1 epoch on GPU: ~10-15 minutes
+
+---
+
+## 📚 API Documentation
+
+### Training Pipeline
+
+```python
+from TransformerModel.pipelines.training_pipeline import TrainingPipeline
+
+pipeline = TrainingPipeline()
+pipeline.start()  # Starts training
+```
+
+### Prediction Pipeline
+
+```python
+from TransformerModel.pipelines.prediction_pipeline import PredictPipeline, CustomData
+
+pipeline = PredictPipeline(
+    model_path='path/to/model.pth',
+    tokenizer_src_path='path/to/src_tokenizer.json',
+    tokenizer_tgt_path='path/to/tgt_tokenizer.json',
+    device='cpu'  # or 'cuda'
+)
+
+translation = pipeline.predict("Input text here")
+```
+
+### Components
+
+#### DataIngestion
+```python
+from TransformerModel.components.data_ingestion import DataIngestion
+
+data_ingestion = DataIngestion()
+train_path, test_path = data_ingestion.initiate_data_ingestion(
+    datasource='Helsinki-NLP/opus_books',
+    lang_pair='translation'
+)
+```
+
+#### BilingualDataset
+```python
+from TransformerModel.components.data_transformation import BilingualDataset
+
+dataset = BilingualDataset(
+    ds=raw_dataset,
+    tokenizer_src=src_tokenizer,
+    tokenizer_tgt=tgt_tokenizer,
+    source_lang='en',
+    target_lang='es',
+    seq_length=128
+)
+```
+
+---
+
+## 🐳 Docker Deployment
+
+```bash
+# Build image
+docker build -t transformer-model .
+
+# Run container
+docker run -p 5000:5000 transformer-model
+
+# Docker Compose
+docker-compose up
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+python test.py
+
+# Or pytest
+pip install pytest
 pytest tests/ -v
 ```
 
 ---
+
+## 📝 Configuration Reference
+
+Edit `config/config.py` to customize:
+
+```python
+{
+    "batch_size": 2,              # Training batch size
+    "num_epochs": 3,              # Number of epochs
+    "lr": 0.0001,                 # Learning rate
+    "seq_length": 128,            # Sequence length
+    "d_model": 128,               # Model dimension
+    "nhead": 8,                   # Number of attention heads
+    "num_encoder_layers": 3,      # Encoder layers
+    "num_decoder_layers": 3,      # Decoder layers
+    "dim_feedforward": 256,       # FFN dimension
+    "dropout": 0.1,               # Dropout rate
+    "datasource": "Helsinki-NLP/opus_books",  # Dataset
+    "lang_src": "en",             # Source language
+    "lang_tgt": "es",             # Target language
+}
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### ModuleNotFoundError
+```bash
+# Ensure you're in the project root and .venv is activated
+source .venv/bin/activate
+python src/TransformerModel/pipelines/training_pipeline.py
+```
+
+### Memory Issues
+```python
+# Reduce batch size in config/config.py
+"batch_size": 1  # Instead of 2
+```
+
+### Slow Training
+- Use GPU: Set `device='cuda'` in code
+- Reduce sequence length: Change `seq_length` to 64
+- Reduce dataset size: Modify `num_epochs`
+
+---
+
+## 📊 Current Status
+
+✅ **Completed**
+- Modular project structure
+- Training pipeline with full implementation
+- Prediction pipeline
+- Web application (Flask)
+- Logging and exception handling
+- Configuration management
+- Dataset loading (HuggingFace)
+- Tokenization (Fast tokenizers)
+
+🚀 **Ready for Use**
+- English → Spanish translation training
+- Model checkpoint saving/loading
+- TensorBoard visualization
+- Flask web UI
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Areas for improvement:
+
+1. **Multiple Language Pairs** - Add support for more language combinations
+2. **Inference Optimization** - Quantization, ONNX export
+3. **Advanced Metrics** - BLEU, METEOR, ChrF score implementations
+4. **Web UI Enhancement** - Better UI/UX, batch translation
+5. **Documentation** - More detailed API docs
+
+### How to Contribute
+
+```bash
+# 1. Fork the repository
+# 2. Create a feature branch
+git checkout -b feature/your-feature
+
+# 3. Make changes and commit
+git add .
+git commit -m "Add your feature"
+
+# 4. Push and create PR
+git push origin feature/your-feature
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [HuggingFace](https://huggingface.co/) - Datasets and Tokenizers
+- [PyTorch](https://pytorch.org/) - Deep Learning Framework
+- "Attention Is All You Need" - Vaswani et al., 2017
+
+---
+
+**Last Updated**: January 2026  
+**Version**: 0.1.0  
+**Status**: Active Development---
 
 ## 📁 Project Structure
 

@@ -59,3 +59,39 @@ class MetricsCollector:
             "metrics": current_stats,
             "threshold": threshold
         }
+
+
+if __name__ == '__main__':
+    # Test metrics collector
+    collector = MetricsCollector(window_size=100)
+    
+    # Simulate some predictions
+    for i in range(10):
+        collector.record_prediction(latency_ms=50 + i)
+    
+    collector.record_error()
+    
+    summary = collector.get_summary()
+    print("Metrics Summary:")
+    print(f"  Predictions: {summary['predictions_count']}")
+    print(f"  Errors: {summary['errors_count']}")
+    print(f"  Mean latency: {summary['latency_stats'].get('mean_ms', 0):.2f} ms")
+    print("Metrics collector tested successfully!")
+
+
+if __name__ == '__main__':
+    # Test metrics collector
+    collector = MetricsCollector(window_size=100)
+    
+    # Simulate some predictions
+    for i in range(10):
+        collector.record_prediction(latency_ms=50 + i)
+    
+    collector.record_error()
+    
+    summary = collector.get_summary()
+    print("Metrics Summary:")
+    print(f"  Predictions: {summary['predictions_count']}")
+    print(f"  Errors: {summary['errors_count']}")
+    print(f"  Mean latency: {summary['latency_stats'].get('mean_ms', 0):.2f} ms")
+    print("Metrics collector tested successfully!")

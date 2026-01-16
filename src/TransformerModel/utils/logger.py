@@ -62,3 +62,13 @@ def log_training_event(event: str, metrics: dict) -> None:
     }
     
     logger.info(json.dumps(log_entry))
+
+
+if __name__ == '__main__':
+    # Test logging functionality
+    logger = setup_logging("test")
+    logger.info("Logger test successful")
+    
+    log_prediction("Hello", "नमस्ते", 45.5, "v1.0.0")
+    log_training_event("epoch_complete", {"epoch": 1, "loss": 0.5})
+    print("Logging utilities tested successfully!")

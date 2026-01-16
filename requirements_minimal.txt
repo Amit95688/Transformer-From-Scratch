@@ -1,0 +1,6 @@
+torch>=2.0.0
+datasets>=2.14.0
+tokenizers>=0.14.0
+tqdm>=4.66.0
+tensorboard>=2.20.0
+Flask>=3.0.0

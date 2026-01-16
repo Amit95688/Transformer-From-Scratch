@@ -13,15 +13,17 @@ def get_config():
         "vocab_size": 10000,
         "tokenizer_batch_size": 64,
         "source_lang": "en",
-        "target_lang": "hi",
+        "target_lang": "es",
         "lang_src": "en",
-        "lang_tgt": "hi",
+        "lang_tgt": "es",
         "model_folder": "models",
         "tokenizer_folder": "data/tokenizers",
         "preload": None,
         "tokenizer_file": "data/tokenizers/tokenizer_{lang}.json",
         "experiment_name": "runs/en_hi_model",
         "max_seq_filter": 500,
+        "datasource": "Helsinki-NLP/opus_books",
+        "seq_len": 128,
     }
 
 def get_weights_file_path(config, epoch: str):
