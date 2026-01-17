@@ -6,11 +6,14 @@ WORKDIR /build
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    git \
+    gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install
-COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+COPY requirements_docker.txt .
+RUN pip install --user --no-cache-dir -r requirements_docker.txt
 
 # Final stage
 FROM python:3.11-slim
@@ -35,7 +38,7 @@ COPY config/ ./config/
 COPY data/ ./data/
 COPY scripts/ ./scripts/
 COPY templates/ ./templates/
-COPY main.py .
+COPY app.py .
 
 # Create directories for outputs
 RUN mkdir -p models runs mlruns
@@ -44,4 +47,4 @@ RUN mkdir -p models runs mlruns
 EXPOSE 5000
 
 # Default command: run web app
-CMD ["python", "main.py"]
+CMD ["python", "app.py"]

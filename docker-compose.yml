@@ -1,104 +1,43 @@
 version: '3.8'
 
 services:
-  # PostgreSQL for Airflow metadata (production-ready)
-  postgres:
-    image: postgres:15
-    container_name: transformer_airflow_db
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+  # Flask app
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transformer_app
+    ports:
+      - "5000:5000"
     volumes:
-      - postgres-db-volume:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
-      interval: 10s
-      retries: 5
-      start_period: 5s
+      - ./models:/app/models
+      - ./runs:/app/runs
+      - ./logs:/app/logs
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
     restart: always
-    networks:
-      - airflow-network
 
-  # Airflow webserver and scheduler
+  # Airflow service
   airflow:
     build:
       context: .
       dockerfile: Dockerfile.airflow
     container_name: transformer_airflow
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      # Airflow configuration
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CORE__FERNET_KEY: 'your-fernet-key-here-generate-with-python-cryptography'
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      AIRFLOW__WEBSERVER__SECRET_KEY: 'your-secret-key-here'
-      
-      # ML-specific configurations
-      MLFLOW_TRACKING_URI: http://mlflow:5000
-      
-      # GPU support (if available)
-      NVIDIA_VISIBLE_DEVICES: all
-      
+    ports:
+      - "8080:8080"
+      - "5555:5555"
     volumes:
-      # Mount DAGs, logs, and project files
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./models:/opt/airflow/models
       - ./runs:/opt/airflow/runs
-      - ./mlruns:/opt/airflow/mlruns
-      - ./tokenizer_en.json:/opt/airflow/tokenizer_en.json
-      - ./tokenizer_hi.json:/opt/airflow/tokenizer_hi.json
-      
-    ports:
-      - "8080:8080"
-    
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 80s
-    
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__CORE__LOAD_DEFAULT_CONNECTIONS: 'false'
     restart: always
-    networks:
-      - airflow-network
-    
-    # Uncomment for GPU support
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
 
-  # MLflow tracking server (optional but recommended)
-  mlflow:
-    image: python:3.11-slim
-    container_name: transformer_mlflow
-    command: >
-      bash -c "pip install mlflow psycopg2-binary &&
-               mlflow server 
-               --backend-store-uri postgresql://airflow:airflow@postgres/mlflow
-               --default-artifact-root /mlflow/artifacts
-               --host 0.0.0.0
-               --port 5000"
-    volumes:
-      - ./mlruns:/mlflow/artifacts
-    ports:
-      - "5000:5000"
-    depends_on:
-      - postgres
-    restart: always
-    networks:
-      - airflow-network
-
-  # TensorBoard for visualization (optional)
+  # TensorBoard for visualization
   tensorboard:
     image: tensorflow/tensorflow:latest
     container_name: transformer_tensorboard
@@ -108,8 +47,6 @@ services:
     ports:
       - "6006:6006"
     restart: always
-    networks:
-      - airflow-network
 
 volumes:
   postgres-db-volume:
@@ -117,3 +54,5 @@ volumes:
 networks:
   airflow-network:
     driver: bridge
+
+

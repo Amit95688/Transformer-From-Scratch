@@ -1,0 +1,45 @@
+# Airflow Docker image
+FROM python:3.11-slim
+
+# Set environment variables
+ENV AIRFLOW_HOME=/opt/airflow \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR $AIRFLOW_HOME
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    curl \
+    postgresql-client \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create airflow user
+RUN useradd -ms /bin/bash airflow
+
+# Install Airflow with minimal providers
+RUN pip install --upgrade pip && \
+    pip install apache-airflow[postgres]==2.8.0 && \
+    pip install apache-airflow-providers-docker==3.9.0
+
+# Copy project files
+COPY --chown=airflow:airflow . .
+
+# Create necessary directories
+RUN mkdir -p dags logs plugins && \
+    chown -R airflow:airflow $AIRFLOW_HOME
+
+# Switch to airflow user
+USER airflow
+
+# Expose ports
+EXPOSE 8080 5555
+
+# Default command
+CMD ["airflow", "standalone"]
