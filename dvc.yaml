@@ -1,0 +1,33 @@
+stages:
+  data_ingestion:
+    cmd: python -m src.TransformerModel.components.data_ingestion
+    deps:
+      - src/TransformerModel/components/data_ingestion.py
+    outs:
+      - data/train.csv
+      - data/test.csv
+      - data/Data.csv
+
+  data_transformation:
+    cmd: python -m src.TransformerModel.components.data_transformation
+    deps:
+      - src/TransformerModel/components/data_transformation.py
+      - data/train.csv
+      - data/test.csv
+    outs:
+      - data/tokenizers/tokenizer_src.json
+      - data/tokenizers/tokenizer_tgt.json
+      - artifacts/preprocessor.pkl
+
+  model_training:
+    cmd: python src/TransformerModel/pipelines/training_pipeline.py
+    deps:
+      - src/TransformerModel/components/model_trainer.py
+      - src/TransformerModel/components/pytorch_model.py
+      - data/train.csv
+      - data/test.csv
+      - data/tokenizers/tokenizer_src.json
+      - data/tokenizers/tokenizer_tgt.json
+    outs:
+      - models/model_epoch_*.pt
+      - models/final_model.pt
